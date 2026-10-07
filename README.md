@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Ateeq Ur Rehman: Personal Portfolio Website
 
 A multi-page static portfolio website built with plain HTML, CSS and JavaScript. There is no framework, no build step and no dependencies, apart from Google Fonts (Fraunces and Inter), which fall back to system fonts if offline.
@@ -30,7 +29,7 @@ python3 -m http.server 8000
 | `contact.html` | Contact (email, social links, form) |
 | `cv.html` | CV (printable, Save as PDF) |
 
-Every page also has an **"Ask about Ateeq"** chat button (bottom right), described below.
+Every page also has a **"Muavin tell about Ateeq"** chat button (bottom right), described below.
 
 ## Folder structure
 
@@ -38,7 +37,9 @@ Every page also has an **"Ask about Ateeq"** chat button (bottom right), describ
 index.html, about.html, ... cv.html
 style.css        all styles (colors are CSS variables at the top)
 script.js        mobile menu, scroll reveal, project filter, contact form, CV print
-netlify/functions/chat.js   secure server-side proxy for the AI assistant (holds the API key logic)
+config.js        backend URL for Muavin
+cloudflare/worker.js   Muavin backend for GitHub Pages (Cloudflare Worker)
+netlify/functions/chat.js   Muavin backend for Netlify
 netlify.toml     Netlify settings
 assets/
   profile.jpg            profile photo shown on the Home page
@@ -65,32 +66,38 @@ assets/
 
 The form opens the visitor's email app with the message filled in (a `mailto:` link to sunbulbroter@gmail.com). To receive messages directly from the page, use a form service such as Formspree: set the form's `action` to your endpoint and remove the `submit` handler in `script.js`.
 
-## AI assistant ("Ask about Ateeq")
+## Muavin (AI assistant)
 
-A chat button on every page lets visitors ask questions about you. It uses the Gemini API and is limited to facts about you. Off-topic questions get a short polite refusal, and unknown details point to your email.
+Every page has a **"Muavin tell about Ateeq"** chat button (bottom right). Muavin uses the Gemini API and answers only questions about you. Off-topic questions get a short polite refusal, and unknown details point to your email. Edit what Muavin knows in the FACTS section of `cloudflare/worker.js` (and the same text in `netlify/functions/chat.js` if you use Netlify).
 
-**Important: the API key is never stored in the website files.** Putting a key in front-end code would let anyone copy it from the browser and use it. Instead the browser talks to `netlify/functions/chat.js`, which adds the key on the server.
+**The API key must never be placed in the website files.** Anything in front-end code can be copied by any visitor. Muavin talks to a small backend that keeps the key secret. GitHub Pages cannot run a backend, so this is why Muavin does not work on GitHub Pages alone. Use one of these two options:
 
-Setup:
-1. Deploy the site on **Netlify from a GitHub repository** (or with the Netlify CLI). Drag-and-drop deploys do not include functions, and GitHub Pages cannot run them.
-2. In Netlify go to *Site configuration, then Environment variables* and add `GEMINI_API_KEY` with your key. Redeploy.
-3. Optional: add `GEMINI_MODEL` (default `gemini-2.5-flash`) to change the model.
-4. Local testing: copy `.env.example` to `.env`, add the key, and run `npx netlify dev`. `.env` is already in `.gitignore`.
+### Option A: GitHub Pages + free Cloudflare Worker (recommended if your site is on GitHub Pages)
+1. Create a free account at dash.cloudflare.com, then go to *Workers & Pages, Create, Create Worker*. Name it `muavin` and click Deploy.
+2. Click *Edit code*, delete the sample code, paste the whole content of `cloudflare/worker.js`, and click Deploy.
+3. Go to the Worker's *Settings, Variables and Secrets*. Add a **Secret** named `GEMINI_API_KEY` with your key. Optionally add a text variable `ALLOWED_ORIGIN` set to your site, e.g. `https://yourname.github.io` (no trailing slash and no path).
+4. Open your Worker URL (like `https://muavin.yourname.workers.dev`) in the browser. You should see `{"ok":true,"configured":true}`.
+5. Open `config.js` and set `window.MUAVIN_ENDPOINT = 'https://muavin.yourname.workers.dev';`. Upload the changed file to GitHub.
 
-To change what the assistant knows, edit the FACTS section at the top of `netlify/functions/chat.js`. If you open the site as plain files, the chat shows a polite "not available" message, and everything else works normally.
+### Option B: Netlify (from a GitHub repository)
+1. Import the repository in Netlify (drag-and-drop does not include functions).
+2. Add the environment variable `GEMINI_API_KEY` in *Site configuration, Environment variables*, then redeploy. Leave `config.js` as it is.
 
-Keep your key private: if it was ever pasted into a public place, create a new one in Google AI Studio and use that instead. Set a usage quota there too.
+Optional for both: `GEMINI_MODEL` (default `gemini-2.5-flash`).
+
+### Troubleshooting
+- Chat says "Muavin is not available": press F12, open Console, send a message and read the warning. A 404 or 405 means no backend is connected yet (check `config.js`). A 500 means the secret is missing. A 502 means Google rejected the request (check the key and model).
+- If the Worker health page shows `"configured":false`, the secret name must be exactly `GEMINI_API_KEY`.
+- `index.html` must be at the **root** of the GitHub repository, not inside an extra `site` folder.
+- If your key was ever pasted in a public place, create a new one in Google AI Studio and set a usage quota.
 
 ## Deploy (free)
 
-**Netlify (needed for the AI assistant):** push the folder to GitHub, then "Import from Git" in Netlify.
-**GitHub Pages / Netlify drag-and-drop:** the website works, but the AI assistant will not.
+**GitHub Pages:** upload the files to the repository root and enable Pages (Settings, then Pages). Muavin needs Option A above.
+**Netlify:** import from GitHub. Muavin works with Option B.
 
 ## Notes
 
 - Fully responsive with a mobile menu, and no horizontal scrolling.
 - Animations are subtle and switch off automatically for users who prefer reduced motion.
 - Contact: sunbulbroter@gmail.com
-=======
-# PersonalPortfolio
->>>>>>> 91bd8ca9de76c7177f57ba539a1711d583a4ca19
