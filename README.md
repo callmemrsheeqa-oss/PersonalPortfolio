@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Ateeq Ur Rehman: Personal Portfolio Website
 
 A multi-page static portfolio website built with plain HTML, CSS and JavaScript. There is no framework, no build step and no dependencies, apart from Google Fonts (Fraunces and Inter), which fall back to system fonts if offline.
@@ -90,3 +91,6 @@ Keep your key private: if it was ever pasted into a public place, create a new o
 - Fully responsive with a mobile menu, and no horizontal scrolling.
 - Animations are subtle and switch off automatically for users who prefer reduced motion.
 - Contact: sunbulbroter@gmail.com
+=======
+# PersonalPortfolio
+>>>>>>> 91bd8ca9de76c7177f57ba539a1711d583a4ca19
