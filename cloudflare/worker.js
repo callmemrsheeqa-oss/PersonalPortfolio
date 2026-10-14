@@ -35,7 +35,23 @@ export default {
     };
     const json = (code, obj) => new Response(JSON.stringify(obj), { status: code, headers: { ...cors, 'Content-Type': 'application/json' } });
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
-    if (request.method === 'GET') return json(200, { ok: true, configured: !!env.GEMINI_API_KEY }); // quick health check
+    if (request.method === 'GET') {
+      // Health check: /  ->  { ok, configured }.   Connection test: /?test=1  ->  asks Gemini one tiny question and reports the result (never shows the key).
+      if (new URL(request.url).searchParams.get('test') === '1' && env.GEMINI_API_KEY) {
+        try {
+          const model = env.GEMINI_MODEL || 'gemini-2.5-flash';
+          const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
+            body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: 'Say OK' }] }], generationConfig: { maxOutputTokens: 20 } })
+          });
+          let message = '';
+          if (!r.ok) { try { message = String((await r.json()).error?.message || '').slice(0, 200); } catch {} }
+          return json(200, { model, gemini_status: r.status, gemini_ok: r.ok, message });
+        } catch (e) { return json(200, { gemini_ok: false, message: 'network error reaching Google' }); }
+      }
+      return json(200, { ok: true, configured: !!env.GEMINI_API_KEY });
+    }
     if (request.method !== 'POST') return json(405, { error: 'method_not_allowed' });
     if (!env.GEMINI_API_KEY) return json(500, { error: 'not_configured' });
 
