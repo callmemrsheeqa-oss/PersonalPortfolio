@@ -56,6 +56,7 @@ assets/
 - **Colors:** edit the variables at the top of `style.css` (`--accent`, `--warm`, `--bg`, and so on). Dark mode values are in the `prefers-color-scheme: dark` block right below.
 - **Text and projects:** edit the relevant `.html` file directly. Look for orange `[Placeholder: ...]` text and fill in the real details (project results, MCB internship tasks, ZDS responsibilities).
 - **Add a project:** copy an existing `<article class="card proj rv" ...>` block in `projects.html`. Set `data-cat` to `ml`, `web`, `app` or `con` so the filter works. Status badge options are Built, In Progress and Concept.
+- **All Video Downloader:** a local Flask + yt-dlp + ffmpeg project is listed in `projects.html` and the CV. It is not deployed or hosted.
 - **GitHub / demo buttons:** add `<a class="btn sm" href="...">GitHub</a>` inside the project card once you have a repository or live link.
 
 ## CV
