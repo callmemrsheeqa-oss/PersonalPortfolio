@@ -1,6 +1,6 @@
 // Muavin backend as a Cloudflare Worker (free). Use this when the site is on GitHub Pages.
 // Add GEMINI_API_KEY as a SECRET in the Worker settings. Never put the key in this file.
-// Optional variables: GEMINI_MODEL (default gemini-2.5-flash), ALLOWED_ORIGIN (e.g. https://yourname.github.io)
+// Optional variables: GEMINI_MODEL (default gemini-3.8-flash), ALLOWED_ORIGIN (e.g. https://yourname.github.io)
 
 const SYSTEM = `You are Muavin, the assistant on the personal website of Ateeq Ur Rehman. Introduce yourself as Muavin if asked. You answer ONLY questions about Ateeq Ur Rehman, using only the facts below.
 
@@ -40,7 +40,7 @@ export default {
       // Health check: /  ->  { ok, configured }.   Connection test: /?test=1  ->  asks Gemini one tiny question and reports the result (never shows the key).
       if (new URL(request.url).searchParams.get('test') === '1' && env.GEMINI_API_KEY) {
         try {
-          const model = env.GEMINI_MODEL || 'gemini-2.5-flash';
+          const model = env.GEMINI_MODEL || 'gemini-3.8-flash';
           const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
@@ -71,7 +71,7 @@ export default {
     if (!msgs.length || msgs[msgs.length - 1].role !== 'user') return json(400, { error: 'bad_request' });
 
     try {
-      const model = env.GEMINI_MODEL || 'gemini-2.5-flash';
+      const model = env.GEMINI_MODEL || 'gemini-3.8-flash';
       const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
